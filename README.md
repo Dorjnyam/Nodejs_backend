@@ -42,7 +42,12 @@
     IMG_API_KEY=your_imgbb_api_key
     EMAIL_USER=your_email@gmail.com
     EMAIL_PASS=your_email_password
-3. **Сервер ээ ажиллуулах**
+
+3. **Шаардлагатай сангуудыг суулгах**
+    ```bash
+    npm install
+
+4. **Сервер ээ ажиллуулах**
     ```bash
     npm start
 
@@ -50,13 +55,13 @@
 
 ## Ашигласан сангууд
 ### Гол сангууд
-express: Хурдан, минималист веб фреймворк.
-pg: PostgreSQL клиент.
-bcryptjs: Нууц үгийг хэшлэх.
-jsonwebtoken: JWT ашиглан authentication.
+`express`: Хурдан, минималист веб фреймворк.
+`pg`: PostgreSQL клиент.
+`bcryptjs`: Нууц үгийг хэшлэх.
+`jsonwebtoken`: JWT ашиглан authentication.
 ### Туслах сангууд
-dotenv: Орчны хувьсагч удирдах.
-nodemailer: Имэйл илгээх.
+`dotenv`: Орчны хувьсагч удирдах.
+`nodemailer`: Имэйл илгээх.
 
 ---
 
