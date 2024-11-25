@@ -31,8 +31,8 @@
 ## Суулгах заавар
 1. **Төслийг хуулбарлах:**
    ```bash
-   git clone https://github.com/your-repo/node-backend-api.git
-   cd node-backend-api
+   git clone https://github.com/Dorjnyam/Nodejs_backend.git
+   cd Nodejs_backend
 
 2. **Орчны хувьсагчуудыг тохируулах: Төслийн үндсэн хавтсанд .env файл үүсгэн дараах байдлаар тохируулна:**
     ```bash
