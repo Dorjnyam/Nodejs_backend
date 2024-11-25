@@ -1,0 +1,22 @@
+# Ignore node_modules directory (where packages are installed)
+node_modules/
+
+# Ignore environment variables file (to avoid committing sensitive information)
+.env
+
+# Ignore logs
+*.log
+
+# Ignore operating system files (Mac OS, Windows)
+.DS_Store
+Thumbs.db
+
+# Ignore package-lock.json (optional, if you want to ignore it)
+# package-lock.json
+
+# Ignore build or distribution files (if any)
+dist/
+
+# Ignore IDE-specific files (optional, depending on your IDE)
+.vscode/
+.idea/
