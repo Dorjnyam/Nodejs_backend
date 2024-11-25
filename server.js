@@ -1,13 +1,12 @@
 import dotenv from 'dotenv';
 import express from 'express';
-import userRoutes from './routes/userRoutes.js'; // Import user routes
+import userRoutes from './routes/userRoutes.js'; 
 
-dotenv.config(); // Load environment variables
+dotenv.config(); 
 
 const app = express();
-app.use(express.json()); // Middleware to parse JSON requests
+app.use(express.json()); 
 
-// Use the user routes
 app.use('/users', userRoutes);
 
 const PORT = process.env.PORT || 3000;

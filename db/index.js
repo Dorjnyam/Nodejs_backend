@@ -1,7 +1,7 @@
 import pgPromise from 'pg-promise';
 import dotenv from 'dotenv';
 
-dotenv.config(); // Load environment variables
+dotenv.config(); 
 
 const pgp = pgPromise();
 const db = pgp({
@@ -12,4 +12,4 @@ const db = pgp({
   password: process.env.DB_PASSWORD,
 });
 
-export default db; // Use `export default` for ES module compatibility
+export default db; 

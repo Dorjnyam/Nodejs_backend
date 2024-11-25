@@ -1,4 +1,4 @@
-import db from '../db/index.js';  // Import DB connection
+import db from '../db/index.js';  
 
 const User = {
   create: async ({ username, email, password }) => {

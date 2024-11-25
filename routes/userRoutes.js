@@ -5,7 +5,7 @@ import nodemailer from 'nodemailer';
 import db from '../db/index.js'; // Database connection
 import dotenv from 'dotenv';
 
-dotenv.config(); // Load environment variables
+dotenv.config(); 
 
 const router = express.Router();
 
