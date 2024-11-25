@@ -11,5 +11,5 @@ app.use('/users', userRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server running on http://10.3.202.117:${PORT}`);
+  console.log(`Server running on http://10.3.202.117:${PORT}`);   // fixed zohiomol ip address
 });
