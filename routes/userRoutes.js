@@ -2,7 +2,7 @@ import express from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
-import db from '../db/index.js'; // Database connection
+import db from '../db/index.js'; 
 import dotenv from 'dotenv';
 
 dotenv.config(); 
@@ -49,6 +49,7 @@ router.post('/login', async (req, res) => {
     if (!isPasswordValid) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
+    console.log("password validate ",isPasswordValid);
 
     // Generate a JWT token if the password is valid
     const token = jwt.sign(
