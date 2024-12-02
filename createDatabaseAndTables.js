@@ -2,19 +2,16 @@ import pkg from 'pg';
 const { Client } = pkg;
 import dotenv from 'dotenv';
 
-// Load environment variables from .env file
 dotenv.config();
 
-// Create a new client for connecting to PostgreSQL
-const client = new Client({
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-});
-
-// Function to create the database and tables
 async function createDatabaseAndTables() {
+  const client = new Client({
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+  });
+
   try {
     // Connect to PostgreSQL
     await client.connect();
@@ -30,14 +27,22 @@ async function createDatabaseAndTables() {
       $$;
     `;
     await client.query(createDatabaseQuery);
-    console.log(`Database ${process.env.DB_NAME} created successfully.`);
+    console.log(`Database '${process.env.DB_NAME}' checked/created successfully.`);
 
-    // Reconnect to the new database
-    client.end();
-    client.database = process.env.DB_NAME;
-    await client.connect();
+    await client.end(); // Close the current client
 
-    // 2. Create tables
+    // 2. Connect to the newly created database
+    const dbClient = new Client({
+      host: process.env.DB_HOST,
+      port: process.env.DB_PORT,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
+    });
+
+    await dbClient.connect();
+
+    // 3. Create tables
     const createTablesQuery = `
       CREATE TABLE IF NOT EXISTS user_profile (
         id SERIAL PRIMARY KEY,
@@ -78,16 +83,14 @@ async function createDatabaseAndTables() {
         type VARCHAR(10) CHECK(type IN ('credit', 'debit')) NOT NULL
       );
     `;
-    
-    // Execute the query to create the tables
-    await client.query(createTablesQuery);
+
+    await dbClient.query(createTablesQuery);
     console.log('Tables created successfully.');
+
+    await dbClient.end(); // Close the database client
 
   } catch (err) {
     console.error('Error creating database and tables:', err);
-  } finally {
-    // Close the client connection
-    await client.end();
   }
 }
 
