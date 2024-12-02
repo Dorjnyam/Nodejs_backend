@@ -1,4 +1,5 @@
-import { Client } from 'pg';
+import pkg from 'pg';
+const { Client } = pkg;
 import dotenv from 'dotenv';
 
 // Load environment variables from .env file
