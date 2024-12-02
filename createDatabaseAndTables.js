@@ -20,7 +20,15 @@ async function createDatabaseAndTables() {
     await client.connect();
 
     // 1. Create the database
-    const createDatabaseQuery = `CREATE DATABASE ${process.env.DB_NAME};`;
+    const createDatabaseQuery = `
+      DO $$
+      BEGIN
+        IF NOT EXISTS (SELECT 1 FROM pg_database WHERE datname = '${process.env.DB_NAME}') THEN
+          CREATE DATABASE ${process.env.DB_NAME};
+        END IF;
+      END
+      $$;
+    `;
     await client.query(createDatabaseQuery);
     console.log(`Database ${process.env.DB_NAME} created successfully.`);
 
