@@ -1,6 +1,6 @@
 # Ignore node_modules directory (where packages are installed)
 node_modules/
-
+package-lock.json
 # Ignore environment variables file (to avoid committing sensitive information)
 .env
 
