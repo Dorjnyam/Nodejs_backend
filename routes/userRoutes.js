@@ -10,15 +10,15 @@ dotenv.config();
 
 const router = express.Router();
 
-// POST route to register a new user
+
 router.post('/register', async (req, res) => {
   const { username, email, password } = req.body;
 
   try {
-    // Hash the password
-    const hashedPassword = await bcrypt.hash(password, 10); // Salt rounds = 10
+    
+    const hashedPassword = await bcrypt.hash(password, 10); 
 
-    // Insert the user into the database
+    
     const result = await db.one(
       'INSERT INTO user_profile(username, email, password) VALUES($1, $2, $3) RETURNING id, username, email',
       [username, email, hashedPassword]
@@ -30,19 +30,19 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// POST route to log in a user
+
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    // Fetch the user by email
+    
     const user = await db.oneOrNone('SELECT * FROM user_profile WHERE email = $1', [email]);
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Compare the provided password with the hashed password stored in DB
+    
     console.log("password ",password);
     console.log("password logged in ",user.password);
 
@@ -52,11 +52,11 @@ router.post('/login', async (req, res) => {
     }
     console.log("password validate ",isPasswordValid);
 
-    // Generate a JWT token if the password is valid
+    
     const token = jwt.sign(
       { userId: user.id, username: user.username },
-      process.env.JWT_SECRET, // Secret key for signing the token
-      { expiresIn: '1h' } // Token expiration time
+      process.env.JWT_SECRET, 
+      { expiresIn: '1h' } 
     );
     console.log("token ",token)
 
@@ -67,7 +67,7 @@ router.post('/login', async (req, res) => {
 
 });
 
-// POST route to send password reset email
+
 router.post('/reset-password', async (req, res) => {
   const { email } = req.body;
 
@@ -83,8 +83,8 @@ router.post('/reset-password', async (req, res) => {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: process.env.EMAIL_USER,  // Your email here
-        pass: process.env.EMAIL_PASS,  // Your email password here
+        user: process.env.EMAIL_USER,  
+        pass: process.env.EMAIL_PASS,  
       },
     });
 
@@ -106,18 +106,18 @@ router.post('/reset-password', async (req, res) => {
   }
 });
 
-// PATCH route to update user profile
+
 router.patch('/update/:userId', authenticateToken, async (req, res) => {
   const { userId } = req.params;
   const { firstName, lastName, photoUrl } = req.body;
 
-  // Ensure the token's userId matches the requested userId
+  
   if (req.user.userId !== parseInt(userId, 10)) {
     return res.status(403).json({ message: 'Forbidden: You can only update your own profile' });
   }
 
   try {
-    // Validate that the user exists in the database
+    
     const user = await db.oneOrNone('SELECT * FROM user_profile WHERE id = $1', [userId]);
 
     if (!user) {
@@ -144,37 +144,37 @@ router.patch('/update/:userId', authenticateToken, async (req, res) => {
   }
 });
 
-// GET route to fetch user profile
-router.get('/:userId', async (req, res) => {
-  const { userId } = req.params;
 
-  try {
-    const user = await db.oneOrNone('SELECT id, username, email, first_name, last_name, photo_url, created_at FROM user_profile WHERE id = $1', [userId]);
+// router.get('/:userId', async (req, res) => {
+//   const { userId } = req.params;
 
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
+//   try {
+//     const user = await db.oneOrNone('SELECT id, username, email, first_name, last_name, photo_url, created_at FROM user_profile WHERE id = $1', [userId]);
 
-    res.status(200).json({
-      id: user.id,
-      username: user.username,
-      email: user.email,
-      first_name: user.first_name,
-      last_name: user.last_name,
-      photo_url: user.photo_url,
-      created_at: user.created_at,
-    });
-  } catch (error) {
-    res.status(500).json({ message: 'Failed to fetch user profile', error: error.message });
-  }
-});
+//     if (!user) {
+//       return res.status(404).json({ message: 'User not found' });
+//     }
 
-// GET route to fetch user profile using token
+//     res.status(200).json({
+//       id: user.id,
+//       username: user.username,
+//       email: user.email,
+//       first_name: user.first_name,
+//       last_name: user.last_name,
+//       photo_url: user.photo_url,
+//       created_at: user.created_at,
+//     });
+//   } catch (error) {
+//     res.status(500).json({ message: 'Failed to fetch user profile', error: error.message });
+//   }
+// });
+
+
 router.get('/token/profile', authenticateToken, async (req, res) => {
-  const { userId } = req.user;  // Extract userId from the decoded JWT payload
+  const { userId } = req.user;  
   console.log("opens profile")
   try {
-    const user = await db.oneOrNone('SELECT id, username, email, first_name, last_name, photo_url, created_at FROM user_profile WHERE id = $1', [userId]);
+    const user = await db.oneOrNone('SELECT id, username, email, first_name, last_name, money, photo_url, created_at FROM user_profile WHERE id = $1', [userId]);
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
@@ -186,6 +186,7 @@ router.get('/token/profile', authenticateToken, async (req, res) => {
       email: user.email,
       first_name: user.first_name,
       last_name: user.last_name,
+      money: user.money,
       photo_url: user.photo_url,
       created_at: user.created_at,
     });
@@ -194,24 +195,20 @@ router.get('/token/profile', authenticateToken, async (req, res) => {
   }
 });
 
-// POST route to save card info
+
 router.post('/card/add-card', authenticateToken, async (req, res) => {
   const { card_number, card_holder_name, expiry_date, cvv, zip } = req.body;
-  const userId = req.user.userId; // Extract userId from the JWT token
+  const userId = req.user.userId; 
 
   if (!card_number || !cvv || !card_holder_name || !expiry_date || !zip) {
     return res.status(400).json({ message: 'Card information is required' });
   }
 
   try {
-    // Encrypt card details before storing them
-    const encryptedCardNumber = encrypt(card_number);
-    const encryptedCvv = encrypt(cvv);
-
-    // Insert the card information into the database
+    
     const newCard = await db.one(
       'INSERT INTO card_info(user_id, card_number, card_holder_name, expiry_date, cvv, zip) VALUES($1, $2, $3, $4, $5, $6) RETURNING id, card_holder_name, expiry_date, zip',
-      [userId, encryptedCardNumber, card_holder_name, expiry_date, encryptedCvv, zip]
+      [userId, card_number, card_holder_name, expiry_date, cvv, zip]
     );
 
     res.status(201).json({ message: 'Card added successfully', card: newCard });
@@ -220,14 +217,15 @@ router.post('/card/add-card', authenticateToken, async (req, res) => {
   }
 });
 
-// GET route to fetch cards for the authenticated user
+
+
 router.get('/card/cards', authenticateToken, async (req, res) => {
-  const userId = req.user.userId; // Extract userId from the JWT token
+  const userId = req.user.userId; 
 
   try {
-    // Fetch the encrypted card details from the database
+    
     const cards = await db.any(
-      'SELECT id, card_holder_name, expiry_date, zip FROM card_info WHERE user_id = $1',
+      'SELECT id,card_number, card_holder_name, expiry_date, zip FROM card_info WHERE user_id = $1',
       [userId]
     );
 
@@ -235,12 +233,12 @@ router.get('/card/cards', authenticateToken, async (req, res) => {
       return res.status(404).json({ message: 'No cards found' });
     }
 
-    // Decrypt card details before sending them back
+    
     const decryptedCards = cards.map(card => ({
-      id: card.id, // Card's ID
+      id: card.id, 
       card_holder_name: card.card_holder_name,
       expiry_date: card.expiry_date,
-      zip: card.zip, // Include zip in the response
+      zip: card.zip, 
     }));
 
     res.status(200).json({ cards: decryptedCards });
@@ -249,5 +247,144 @@ router.get('/card/cards', authenticateToken, async (req, res) => {
   }
 });
 
+router.post('/card/deposit', authenticateToken, async (req, res) => {
+  const { amount } = req.body;
+  const userId = req.user.userId;
+
+  // Check for valid deposit amount
+  if (!amount || isNaN(amount) || amount <= 0) {
+    return res.status(400).json({ message: 'Invalid deposit amount' });
+  }
+
+  try {
+    // Insert transaction log with 'Deposit' description
+    const result = await db.one(
+      'INSERT INTO transaction_log(user_id, description, amount, type) VALUES($1, $2, $3, $4) RETURNING id, user_id, description, amount, timestamp, type',
+      [userId, 'Deposit', amount, 'credit']
+    );
+
+    // Update user profile with the new balance
+    await db.none(
+      'UPDATE user_profile SET money = money + $1 WHERE id = $2',
+      [amount, userId]
+    );
+
+    // Return success response
+    res.status(201).json({
+      message: 'Deposit successful',
+      transaction: result,
+    });
+  } catch (error) {
+    // Handle error
+    res.status(500).json({ message: 'Failed to process deposit', error: error.message });
+  }
+});
+
+
+router.post('/expense/add', authenticateToken, async (req, res) => {
+  const { user_id, transaction_name, amount, dateString } = req.body;
+
+  
+  if (!user_id || !transaction_name || !amount || isNaN(amount) || amount <= 0 || !dateString) {
+    return res.status(400).json({ message: 'Missing or invalid expense information' });
+  }
+
+  try {
+    
+    const parsedDate = new Date(dateString);
+
+    
+    if (isNaN(parsedDate.getTime())) {
+      return res.status(400).json({ message: 'Invalid date format. Please use YYYY-MM-DD' });
+    }
+
+    
+    const newExpense = await db.one(
+      `INSERT INTO expense (user_id, transaction_name, date, amount, is_paid, paid_date)
+       VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, user_id, transaction_name, date, amount, is_paid, paid_date`,
+      [user_id, transaction_name, parsedDate.toISOString().slice(0, 10), amount, false, null] 
+    );
+
+    res.status(201).json({ message: 'Expense added successfully', expense: newExpense });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Failed to add expense', error: error.message });
+  }
+});
+
+
+
+router.put('/expense/paid/:expenseId', authenticateToken, async (req, res) => {
+  const { expenseId } = req.params;
+  const { amount } = req.body;
+
+  
+  if (!amount || isNaN(amount) || amount <= 0) {
+    return res.status(400).json({ message: 'Invalid deposit amount' });
+  }
+
+  try {
+    
+    const updatedExpense = await db.one(
+      `UPDATE expense SET is_paid = true, paid_date = current_timestamp WHERE id = $1 AND is_paid = false RETURNING id, user_id, transaction_name, date, amount, is_paid, paid_date`,
+      [expenseId]
+    );
+
+    if (!updatedExpense) {
+      return res.status(404).json({ message: 'Expense not found or already paid' });
+    }
+
+    
+    const userId = req.user.userId;
+
+    
+    const transactionLog = await db.one(
+      `INSERT INTO transaction_log(user_id, description, amount, type) VALUES ($1, $2, $3, $4) RETURNING id, user_id, description, amount, timestamp, type`,
+      [userId, 'Expense payment', amount, 'debit'] 
+    );
+
+    await db.none(
+      `UPDATE user_profile SET money = money - $1 WHERE user_id = $2`,
+      [amount, userId]
+    );
+
+    res.status(200).json({
+      message: 'Expense marked as paid successfully',
+      expense: updatedExpense,
+      transaction: transactionLog,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Failed to mark expense as paid', error: error.message });
+  }
+});
+
+router.get('/transaction/log', authenticateToken, async (req, res) => {
+  const userId = req.user.userId;
+
+  try {
+    const transactions = await db.any(
+      `
+      SELECT 
+        t.*, 
+        u.photo_url 
+      FROM 
+        transaction_log t
+      INNER JOIN 
+        user_profile u 
+      ON 
+        t.user_id = u.id
+      WHERE 
+        t.user_id = $1
+      `,
+      [userId]
+    );
+
+    res.status(200).json({ transactions });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Failed to fetch transaction log', error: error.message });
+  }
+});
 
 export default router;

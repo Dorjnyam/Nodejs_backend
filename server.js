@@ -1,29 +1,33 @@
 import dotenv from 'dotenv';
 import express from 'express';
+import cors from 'cors'; // Import the CORS package
 import userRoutes from './routes/userRoutes.js'; 
 import { encrypt, decrypt } from './encryption.js';
 
-// Load environment variables from .env file
 dotenv.config(); 
 
 const app = express();
+
+// Enable CORS for all routes
+app.use(cors());
+
+// Enable JSON parsing middleware
 app.use(express.json()); 
 
-// Define the routes
+// Set up routes
 app.use('/users', userRoutes);
 
-// Encryption and decryption logic can be tested in a route or inside the app logic
 app.get('/test-encryption', (req, res) => {
   const originalData = "Sensitive information here";
 
-  // Encrypt the data
+  // Encrypt and decrypt the data for testing
   const encryptedData = encrypt(originalData);
   console.log('Encrypted Data:', encryptedData);
 
-  // Decrypt the data
   const decryptedData = decrypt(encryptedData);
   console.log('Decrypted Data:', decryptedData);
 
+  // Respond with the original, encrypted, and decrypted data
   res.json({
     originalData,
     encryptedData,
@@ -31,7 +35,8 @@ app.get('/test-encryption', (req, res) => {
   });
 });
 
+// Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server running on http://192.168.15.110:${PORT}`); // fixed zohiomol IP address
+  console.log(`Server running on http://192.168.83.3:${PORT}`); 
 });

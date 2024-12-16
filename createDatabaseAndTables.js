@@ -13,10 +13,10 @@ async function createDatabaseAndTables() {
   });
 
   try {
-    // Connect to PostgreSQL
+    
     await client.connect();
 
-    // 1. Create the database
+    
     const createDatabaseQuery = `
       DO $$
       BEGIN
@@ -29,9 +29,9 @@ async function createDatabaseAndTables() {
     await client.query(createDatabaseQuery);
     console.log(`Database '${process.env.DB_NAME}' checked/created successfully.`);
 
-    await client.end(); // Close the current client
+    await client.end(); 
 
-    // 2. Connect to the newly created database
+    
     const dbClient = new Client({
       host: process.env.DB_HOST,
       port: process.env.DB_PORT,
@@ -42,7 +42,7 @@ async function createDatabaseAndTables() {
 
     await dbClient.connect();
 
-    // 3. Create tables
+    
     const createTablesQuery = `
       CREATE TABLE IF NOT EXISTS user_profile (
         id SERIAL PRIMARY KEY,
@@ -87,12 +87,12 @@ async function createDatabaseAndTables() {
     await dbClient.query(createTablesQuery);
     console.log('Tables created successfully.');
 
-    await dbClient.end(); // Close the database client
+    await dbClient.end(); 
 
   } catch (err) {
     console.error('Error creating database and tables:', err);
   }
 }
 
-// Run the function
+
 createDatabaseAndTables();
