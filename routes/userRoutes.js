@@ -251,31 +251,26 @@ router.post('/card/deposit', authenticateToken, async (req, res) => {
   const { amount } = req.body;
   const userId = req.user.userId;
 
-  // Check for valid deposit amount
   if (!amount || isNaN(amount) || amount <= 0) {
     return res.status(400).json({ message: 'Invalid deposit amount' });
   }
 
   try {
-    // Insert transaction log with 'Deposit' description
     const result = await db.one(
       'INSERT INTO transaction_log(user_id, description, amount, type) VALUES($1, $2, $3, $4) RETURNING id, user_id, description, amount, timestamp, type',
       [userId, 'Deposit', amount, 'credit']
     );
 
-    // Update user profile with the new balance
     await db.none(
-      'UPDATE user_profile SET money = money + $1 WHERE id = $2',
+      'UPDATE user_profile SET money = money + $1 WHERE user_id = $2',
       [amount, userId]
     );
 
-    // Return success response
     res.status(201).json({
       message: 'Deposit successful',
       transaction: result,
     });
   } catch (error) {
-    // Handle error
     res.status(500).json({ message: 'Failed to process deposit', error: error.message });
   }
 });

@@ -38,5 +38,5 @@ app.get('/test-encryption', (req, res) => {
 // Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server running on http://192.168.83.3:${PORT}`); 
+  console.log(`Server running on http://192.168.50.3:${PORT}`); 
 });
